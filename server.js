@@ -228,7 +228,7 @@ app.get('/api/user/data', (req, res) => {
 });
 
 // SPA fallback
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
