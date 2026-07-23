@@ -26,9 +26,20 @@ app.post('/api/upload', express.raw({ type: '*/*', limit: '1gb' }), async (req, 
         if (duration < 480 && (!title || !artist)) {
             console.log('Missing metadata and duration < 8m, running Shazam...');
             const { exec } = require('child_process');
+            
+            // Ensure ffmpeg is in PATH for Shazamio
+            try {
+                const ffmpegPath = require('ffmpeg-static');
+                if (ffmpegPath) {
+                    process.env.PATH = require('path').dirname(ffmpegPath) + (process.platform === 'win32' ? ';' : ':') + process.env.PATH;
+                }
+            } catch(e) {}
+            
             await new Promise((resolve) => {
-                exec(`python shazam_bridge.py "${filePath}"`, { cwd: __dirname }, (err, stdout) => {
-                    if (!err && stdout) {
+                exec(`python3 shazam_bridge.py "${filePath}" || python shazam_bridge.py "${filePath}"`, { cwd: __dirname }, (err, stdout, stderr) => {
+                    if (err) console.error('Shazam Error:', err);
+                    if (stderr) console.error('Shazam Stderr:', stderr);
+                    if (stdout) {
                         try {
                             const result = JSON.parse(stdout.trim());
                             if (result.title) {
