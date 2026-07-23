@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "postinstall": "pip install shazamio || pip3 install shazamio"
+    "postinstall": "pip install shazamio --break-system-packages || pip3 install shazamio --break-system-packages"
   },
   "keywords": [],
   "author": "",
