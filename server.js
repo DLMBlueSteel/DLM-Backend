@@ -36,7 +36,8 @@ app.post('/api/upload', express.raw({ type: '*/*', limit: '1gb' }), async (req, 
             } catch(e) {}
             
             await new Promise((resolve) => {
-                exec(`python3 shazam_bridge.py "${filePath}" || python shazam_bridge.py "${filePath}"`, { cwd: __dirname }, (err, stdout, stderr) => {
+                const pyCmd = `python3 shazam_bridge.py "${filePath}" || python shazam_bridge.py "${filePath}"`;
+                exec(pyCmd, { cwd: __dirname, env: { ...process.env, PYTHONPATH: path.join(__dirname, 'python_libs') } }, (err, stdout, stderr) => {
                     if (err) console.error('Shazam Error:', err);
                     if (stderr) console.error('Shazam Stderr:', stderr);
                     if (stdout) {
